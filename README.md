@@ -24,7 +24,7 @@ To take advantage of OnlyOffice and ClamAV you'll need to install the apps in Ne
 ## PostFix MTA   
 [This](https://github.com/scrummie02/DockerComposeFiles/blob/master/postfix_mta.yml) simple to configure Postfix MTA you can use to connect to your Gmail account.  This is great for a simple MTA that you can use to email yourself alerts of other things.  This isn't to be used exteranlly!  It is used for your local apps to use to send you messages, alerts or even documents.  
 
-##MayanEDMS
+## MayanEDMS
 MayanEDMS is an electronic document management system.  it runs on Docker or just Linux.  The preferred method is Docker so I included a compose file to deploy it quickly.  Ensure you back up your documents repos and postgres database.  This stack includes:
 * The latest [MayanEDMS](https://hub.docker.com/r/mayanedms/mayanedms/)
 * The latest [PostgresSQL](https://hub.docker.com/_/postgres)
