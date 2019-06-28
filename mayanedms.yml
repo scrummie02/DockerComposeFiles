@@ -23,7 +23,7 @@ services:
       - appnet
     
   results:
-    image: redis:latest
+    image: redis:alpine
     deploy:
        replicas: 1
        placement:
