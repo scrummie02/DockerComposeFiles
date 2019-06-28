@@ -1,0 +1,21 @@
+version: '3.7'
+
+networks:
+  prodnet:
+    driver: overlay
+    external: true
+
+services:
+  postfix:
+    image: lylescott/postfix-gmail-relay
+    ports:
+      - 8025:25
+    deploy:
+       replicas: 1
+       placement:
+        constraints: [node.role == manager]
+    environment:
+      - 'SYSTEM_TIMEZONE=America/New_York' 
+      - 'MYNETWORKS=10.0.5.0/24 172.17.0.0/16 510.255.0.0/16'                      
+      - 'EMAIL=youemail@gmail.com
+      - 'EMAILPASS=yourgmailpassword'
