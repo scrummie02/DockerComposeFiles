@@ -21,5 +21,5 @@ This compose file uses the following
 Ensure you have enough resources, 4GB is fine if you want torun OnlyOffice.  If you don't want to just remove it.
 To take advantage of OnlyOffice and ClamAV you'll need to install the apps in NextCloud and point them to the containers.  
 
-## PostFix MTA  
-A simple to configure Postfix MTA you can use to connect toyour Gmail account.  This is great for a simple MTA that you can use to email yourself alerts of other things.  This isn't to be used exteranlly!  It is used for your local apps to use to send you messages, alerts or even documents.  
+## PostFix MTA   
+[This] (https://github.com/scrummie02/DockerComposeFiles/blob/master/postfix_mta.yml) simple to configure Postfix MTA you can use to connect toyour Gmail account.  This is great for a simple MTA that you can use to email yourself alerts of other things.  This isn't to be used exteranlly!  It is used for your local apps to use to send you messages, alerts or even documents.  
