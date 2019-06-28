@@ -23,3 +23,14 @@ To take advantage of OnlyOffice and ClamAV you'll need to install the apps in Ne
 
 ## PostFix MTA   
 [This](https://github.com/scrummie02/DockerComposeFiles/blob/master/postfix_mta.yml) simple to configure Postfix MTA you can use to connect to your Gmail account.  This is great for a simple MTA that you can use to email yourself alerts of other things.  This isn't to be used exteranlly!  It is used for your local apps to use to send you messages, alerts or even documents.  
+
+##MayanEDMS
+MayanEDMS is an electronic document management system.  it runs on Docker or just Linux.  The preferred method is Docker so I included a compose file to deploy it quickly.  Ensure you back up your documents repos and postgres database.  This stack includes:
+* The latest [MayanEDMS](https://hub.docker.com/r/mayanedms/mayanedms/)
+* The latest [PostgresSQL](https://hub.docker.com/_/postgres)
+* The latest [RabbitMQ](https://hub.docker.com/_/rabbitmq)
+* The Alpine verions of [Redis](https://hub.docker.com/_/redis/)
+
+MyanEDMS is a great system that provides a repository for your scanned documents, performs OCR and allows you to tag and file documents.  There are a lot of different features to this software package and i find it highly useful.  It will automatically uplaod documents from a watch directory, so fro exmaple if you have a nextcloud directory you upload documents into, MayanEDMS can watch that directory and import those documents into MayanEDMS, perform OCR and allow them to be searchable and taggable.  Great way to keep backups of documents.
+
+I think using watchtower would be advisable to keep your containers up to date. I will be adding more soon. 
