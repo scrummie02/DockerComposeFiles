@@ -1,0 +1,197 @@
+version: '3.7'
+
+networks:
+  traefik:
+    driver: overlay
+  appnet:
+    driver: overlay
+    external: true
+
+services:
+  nextcloud:
+    image: wonderfall/nextcloud
+    depends_on:
+      - nextcloud-db           # If using MySQL
+      - redis                  # If using Redis
+      - clam-av
+      - document-server
+    ports:
+      - 8888:8888
+    deploy:
+       replicas: 1
+       placement:
+        constraints: [node.role == worker]
+    environment:
+      - UID=1007                          #You can specify a UID and GID, usefull for permission for external NFS or local mounts
+      - GID=1007
+      - UPLOAD_MAX_SIZE=10G
+      - APC_SHM_SIZE=128M
+      - OPCACHE_MEM_SIZE=128
+      - CRON_PERIOD=15m
+      - TZ=America/New_York
+      - ADMIN_USER=admin                   # Don't set to configure through browser, and please for the love of all that is holy don't use "admin"
+      - ADMIN_PASSWORD=verysecretpassword  # Don't set to configure through browser
+      - DOMAIN=you.subdomain.com
+      - DB_TYPE=mysql
+      - DB_NAME=nextcloud                 # I recommend changing these values to something a little less obvious
+      - DB_USER=nextclouddbuser
+      - DB_PASSWORD=anotherverysecretpassword
+      - DB_HOST=nextcloud
+    volumes:
+      - nextcloud_data:/data
+      - nextcloud_config:/config
+      - nextcloud_apps:/apps2
+      - nextcloud_themes:/nextcloud/themes
+    networks:
+      - appnet
+      - traefik
+
+  # If using Redis
+  redis:
+    image: redis:alpine
+    volumes:
+      - nextcloud_redis:/data
+    deploy:
+       replicas: 1
+       placement:
+        constraints: [node.role == worker]
+    networks:
+      - appnet
+      - traefik
+      
+      
+   # If using MySQL
+  nextcloud-db:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3307:3306
+    deploy:
+       replicas: 1
+       placement:
+        constraints: [node.role == worker]
+    volumes:
+      - nextcloud_mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=yetAnotherVerySecretPassword
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextclouddbuser
+      - MYSQL_PASSWORD=anotherverysecretpassword
+    networks:
+        - appnet
+        - traefik
+              
+  clam-av:
+    image: tiredofit/clamav:latest
+    ports:
+      - 3310:3310
+    deploy:
+       replicas: 1
+       placement:
+        constraints: [node.role == worker]
+    volumes:
+      - nextcloud_clamav:/data
+      - nextcloud_clamav_logs:/var/log/clamav
+    networks:
+        - appnet
+        - traefik
+        
+  document-server:
+    image: onlyoffice/documentserver:latest
+    stdin_open: true
+    tty: true
+    restart: always
+    networks:
+      - appnet
+      - traefik
+    ports:
+      - 8889:8080
+      - 8890:443
+      - 8891:80
+    deploy:
+       replicas: 1
+       placement:
+        constraints: [node.role == worker]
+    volumes:
+      - document_data:/var/www/onlyoffice/Data
+      - document_log:/var/log/onlyoffice
+    
+volumes:
+   nextcloud_data:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+    
+   nextcloud_config:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+    
+   nextcloud_apps:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+   
+   nextcloud_themes:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+   
+   nextcloud_redis:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+       
+       
+   nextcloud_mysql:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+       
+   nextcloud_clamav:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+       
+   nextcloud_clamav_logs:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+       
+   document_data:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+       
+   document_log:
+      driver: local
+      driver_opts:
+        type: nfs
+        o: addr=nfshost.yourdomain.com,hard,nolock,rw
+        device: ":/path/to/NFS/Share"                #NFS example if you're mounting shares VIA NFS
+       
+
+   
+    
+       
+   
+       
+   
